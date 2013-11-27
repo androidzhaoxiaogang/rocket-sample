@@ -1,5 +1,10 @@
 package fast.rocket.sample;
 
+import java.util.HashMap;
+
+import fast.rocket.Rocket;
+import fast.rocket.config.FutureCallback;
+import fast.rocket.error.RocketError;
 import android.os.Bundle;
 import android.app.Activity;
 import android.widget.ListView;
@@ -19,6 +24,54 @@ public class MainActivity extends Activity {
         mList = (ListView)findViewById(R.id.list);
         mAdapter = new ListsApdater(this, mUrls);
         mList.setAdapter(mAdapter);
+        
+        login();
+    }
+    
+    private void login() {
+    	final HashMap<String, String> params = new HashMap<String, String>();
+    	params.put("method", "onLogin");
+    	params.put("account", "csyw");
+    	params.put("passWord", "111111");
+    	
+    	Rocket.with(this)
+    	.enableCookie(true)
+    	.requestParams(params)
+    	.targetType(UserInfo.class)
+    	.invoke(new FutureCallback<UserInfo>() {
+
+			@Override
+			public void onCompleted(RocketError error, UserInfo result) {
+				if(error != null) {
+					System.out.println("========error======="+error);
+				} else {
+					System.out.println("========result======"+result);
+					
+					testCookie();
+				}
+			}
+		})
+		.load(Constants.loginUrl);
+    }
+    
+    private void testCookie() {
+    	final HashMap<String, String> params = new HashMap<String, String>();
+    	params.put("method", "GetExamInfo");
+    	
+    	Rocket.with(this)
+    	.enableCookie(true)
+    	.requestParams(params)
+    	.targetType(PaperInfo.class)
+    	.invoke(new FutureCallback<PaperInfo>() {
+			public void onCompleted(RocketError error, PaperInfo result) {
+				if(error != null) {
+					System.out.println("========error======="+error);
+				} else {
+					System.out.println("========result======"+result);
+				}
+			}
+		})
+		.load(Constants.getExamInfoUrl);
     }
 
     @Override
