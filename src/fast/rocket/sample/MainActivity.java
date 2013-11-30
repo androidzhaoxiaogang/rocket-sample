@@ -3,7 +3,7 @@ package fast.rocket.sample;
 import java.util.HashMap;
 
 import fast.rocket.Rocket;
-import fast.rocket.config.FutureCallback;
+import fast.rocket.config.JsonCallback;
 import fast.rocket.error.RocketError;
 import android.os.Bundle;
 import android.app.Activity;
@@ -38,7 +38,7 @@ public class MainActivity extends Activity {
     	.enableCookie(true)
     	.requestParams(params)
     	.targetType(UserInfo.class)
-    	.invoke(new FutureCallback<UserInfo>() {
+    	.invoke(new JsonCallback<UserInfo>() {
 
 			@Override
 			public void onCompleted(RocketError error, UserInfo result) {
@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
     	.enableCookie(true)
     	.requestParams(params)
     	.targetType(PaperInfo.class)
-    	.invoke(new FutureCallback<PaperInfo>() {
+    	.invoke(new JsonCallback<PaperInfo>() {
 			public void onCompleted(RocketError error, PaperInfo result) {
 				if(error != null) {
 					System.out.println("========error======="+error);
@@ -84,7 +84,7 @@ public class MainActivity extends Activity {
     private String[] mUrls = {
             "http://a3.twimg.com/profile_images/670625317/aam-logo-v3-twitter.png",
             "http://a3.twimg.com/profile_images/740897825/AndroidCast-350_normal.png",
-            "http://a3.twimg.com/profile_images/121630227/Droid_normal.jpg",
+            "https://www.google.com/images/logos/ps_logo2.png",
             "http://a1.twimg.com/profile_images/957149154/twitterhalf_normal.jpg",
             "http://a1.twimg.com/profile_images/97470808/icon_normal.png",
             "http://a3.twimg.com/profile_images/511790713/AG.png",
