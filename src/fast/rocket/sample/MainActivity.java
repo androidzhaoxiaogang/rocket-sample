@@ -2,30 +2,51 @@ package fast.rocket.sample;
 
 import java.util.HashMap;
 
+
 import fast.rocket.Rocket;
 import fast.rocket.config.JsonCallback;
 import fast.rocket.error.RocketError;
 import android.os.Bundle;
 import android.app.Activity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 public class MainActivity extends Activity {
 	ListView mList;
 	ListsApdater mAdapter;
+	EditText phone;
+	Button ok;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.activity_main);
 		setupViews();
 	}
 
 	private void setupViews() {
-		mList = (ListView) findViewById(R.id.list);
-		mAdapter = new ListsApdater(this, mUrls);
-		mList.setAdapter(mAdapter);
+		//mList = (ListView) findViewById(R.id.list);
+		//mAdapter = new ListsApdater(this, mUrls);
+		//mList.setAdapter(mAdapter);
 
-		login();
+		phone = (EditText) findViewById(R.id.phone);
+		ok = (Button) findViewById(R.id.ok);
+		
+		
+		ok.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				for(int i = 0; i < 30; i++) {
+					//register();
+					//login();
+					getFund();
+				}
+			}
+		});
+		
+		
 	}
 
 	private void login() {
@@ -50,6 +71,66 @@ public class MainActivity extends Activity {
 					}
 				}).load(Constants.loginUrl);
 	}
+	
+	private void register() {
+		final HashMap<String, String> params = new HashMap<String, String>();
+		params.put("token", Utils.getDeviceToken(this));
+		params.put("phone", phone.getText().toString());
+		params.put("vjson", "ANDROID");
+		params.put("sign_t", "MD5");
+		params.put("sign", Md5Encrypt.md5("", "ANDROID888888"));
+		params.put("ver", Utils.getVersionCode(this));
+		params.put("_", String.valueOf(System.currentTimeMillis()));
+		
+		System.out.println("==============params===="+params);
+		
+		Rocket.with(this).requestParams(params)
+				.targetType(LoginResult.class)
+				.invoke(new JsonCallback<LoginResult>() {
+
+					@Override
+					public void onCompleted(RocketError error, LoginResult result) {
+						if (error != null) {
+							
+							System.out.println("========error=======" + error);
+						} else {
+							System.out.println("========result======" + result);
+
+							//testCookie();
+						}
+					}
+				}).load(Constants.registerUrl);
+	}
+	
+	
+	private void getFund() {
+		final HashMap<String, String> params = new HashMap<String, String>();
+		params.put("token", Utils.getDeviceToken(this));
+		params.put("vjson", "ANDROID");
+		params.put("sign_t", "MD5");
+		params.put("sign", Md5Encrypt.md5("", "ANDROID888888"));
+		params.put("ver", Utils.getVersionCode(this));
+		params.put("_", String.valueOf(System.currentTimeMillis()));
+		
+		System.out.println("==============params===="+params);
+		
+		Rocket.with(this).requestParams(params)
+				.targetType(FundResult.class)
+				.invoke(new JsonCallback<FundResult>() {
+
+					@Override
+					public void onCompleted(RocketError error, FundResult result) {
+						if (error != null) {
+							
+							System.out.println("========error=======" + error);
+						} else {
+							System.out.println("========result======" + result);
+
+							//testCookie();
+						}
+					}
+				}).load(Constants.fundPfofitUrl);
+	}
 
 	private void testCookie() {
 		final HashMap<String, String> params = new HashMap<String, String>();
@@ -71,7 +152,7 @@ public class MainActivity extends Activity {
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		mAdapter.recycle();
+		//mAdapter.recycle();
 		// CacheView.recycle();
 	}
 

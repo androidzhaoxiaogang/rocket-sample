@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="ContentDescription">
+        <ignore path="res/layout/login.xml" />
+        <ignore path="res/layout/login_tips.xml" />
+    </issue>
+    <issue id="DuplicateIds">
+        <ignore path="res/layout/login_tips.xml" />
+    </issue>
+    <issue id="HardcodedText">
+        <ignore path="res/layout/login_tips.xml" />
+    </issue>
+    <issue id="PxUsage">
+        <ignore path="res/layout/login_tips.xml" />
+    </issue>
+</lint>
