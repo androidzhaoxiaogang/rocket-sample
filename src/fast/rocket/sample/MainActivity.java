@@ -83,8 +83,6 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 						System.out.println("========error=======" + error);
 					} else {
 						System.out.println("========result======" + result);
-
-						//testCookie();
 					}
 				}
 		});
