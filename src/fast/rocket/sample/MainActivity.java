@@ -79,7 +79,6 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 			.invoke(new JsonCallback<LoginResult>() {
 				public void onCompleted(RocketError error, LoginResult result) {
 					if (error != null) {
-							
 						System.out.println("========error=======" + error);
 					} else {
 						System.out.println("========result======" + result);
@@ -97,8 +96,6 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 		params.put("sign", Md5Encrypt.md5("", "ANDROID888888"));
 		params.put("ver", Utils.getVersionCode(this));
 		params.put("_", String.valueOf(System.currentTimeMillis()));
-		
-		System.out.println("==============params===="+params);
 		
 		Rocket.with(this)
 			.load(Constants.fundPfofitUrl)

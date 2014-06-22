@@ -1,7 +1,5 @@
 package fast.rocket.sample;
 
-import java.util.List;
-
 public class FundResult {
 	private boolean is_succ;
 	private boolean succ;
