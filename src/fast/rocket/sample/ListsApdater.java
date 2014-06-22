@@ -1,7 +1,7 @@
 package fast.rocket.sample;
 
 import fast.rocket.Rocket;
-import fast.rocket.cache.CacheImageView;
+import fast.rocket.cache.NetworkCacheView;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,10 +12,13 @@ import android.widget.TextView;
 public class ListsApdater extends BaseAdapter {
     private String[] mUrls;
     private LayoutInflater mInflater;
+    private Context mContext;
 
     public ListsApdater(Context context, String[] urls) {
+    	mContext = context;
         mUrls = urls;
-        mInflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        mInflater = (LayoutInflater)context.getSystemService(
+        		Context.LAYOUT_INFLATER_SERVICE);
 	}
 
     @Override
@@ -39,7 +42,7 @@ public class ListsApdater extends BaseAdapter {
         if (null == convertView) {
             holder = new ViewHolder();
             convertView = mInflater.inflate(R.layout.item, null);
-            holder.view = (CacheImageView)convertView.findViewById(R.id.image);
+            holder.view = (NetworkCacheView)convertView.findViewById(R.id.image);
             holder.text = (TextView)convertView.findViewById(R.id.text);
             convertView.setTag(holder);
         } else {
@@ -47,8 +50,11 @@ public class ListsApdater extends BaseAdapter {
         }
 
         holder.text.setText("item "+position);
-        //holder.view.setImageUrl(mUrls[position], imageLoader);
-        Rocket.with(holder.view).load(mUrls[position]);
+        Rocket.with(mContext)
+        	.load(mUrls[position])
+        	.asImage()
+        	.error(R.drawable.stub)
+        	.into(holder.view);
         return convertView;
     }
 
@@ -58,7 +64,7 @@ public class ListsApdater extends BaseAdapter {
     }
 
     static class ViewHolder {
-    	CacheImageView view;
+    	NetworkCacheView view;
         TextView text;
     }
 }

@@ -4,12 +4,10 @@ import java.util.HashMap;
 
 
 import fast.rocket.Rocket;
-import fast.rocket.config.JsonCallback;
 import fast.rocket.error.RocketError;
+import fast.rocket.response.JsonCallback;
 import android.os.Bundle;
 import android.app.Activity;
-import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -23,43 +21,43 @@ public class MainActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		setContentView(R.layout.main);
 		setupViews();
 	}
 
 	private void setupViews() {
-		//mList = (ListView) findViewById(R.id.list);
-		//mAdapter = new ListsApdater(this, mUrls);
-		//mList.setAdapter(mAdapter);
+		mList = (ListView) findViewById(R.id.list);
+		mAdapter = new ListsApdater(this, mUrls);
+		mList.setAdapter(mAdapter);
 
-		phone = (EditText) findViewById(R.id.phone);
-		ok = (Button) findViewById(R.id.ok);
-		
-		
-		ok.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				for(int i = 0; i < 30; i++) {
-					//register();
-					//login();
-					getFund();
-				}
-			}
-		});
+//		phone = (EditText) findViewById(R.id.phone);
+//		ok = (Button) findViewById(R.id.ok);
+//		
+//		
+//		ok.setOnClickListener(new OnClickListener() {
+//			public void onClick(View v) {
+//				for(int i = 0; i < 30; i++) {
+//					//register();
+//					//login();
+//					getFund();
+//				}
+//			}
+//		});
 		
 		
 	}
 
 	private void login() {
-		final HashMap<String, String> params = new HashMap<String, String>();
+		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("method", "onLogin");
 		params.put("account", "csyw");
 		params.put("passWord", "111111");
 
-		Rocket.with(this).enableCookie(true).requestParams(params)
-				.targetType(UserInfo.class)
+		Rocket.with(this).load(Constants.loginUrl)
+				.asJson(UserInfo.class)
+				.enableCookie(true)
+				.requestParams(params)
 				.invoke(new JsonCallback<UserInfo>() {
-
-					@Override
 					public void onCompleted(RocketError error, UserInfo result) {
 						if (error != null) {
 							System.out.println("========error=======" + error);
@@ -69,11 +67,11 @@ public class MainActivity extends Activity {
 							testCookie();
 						}
 					}
-				}).load(Constants.loginUrl);
+				});
 	}
 	
 	private void register() {
-		final HashMap<String, String> params = new HashMap<String, String>();
+		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("token", Utils.getDeviceToken(this));
 		params.put("phone", phone.getText().toString());
 		params.put("vjson", "ANDROID");
@@ -84,27 +82,27 @@ public class MainActivity extends Activity {
 		
 		System.out.println("==============params===="+params);
 		
-		Rocket.with(this).requestParams(params)
-				.targetType(LoginResult.class)
-				.invoke(new JsonCallback<LoginResult>() {
-
-					@Override
-					public void onCompleted(RocketError error, LoginResult result) {
-						if (error != null) {
+		Rocket.with(this)
+			.load(Constants.registerUrl)
+			.asJson(LoginResult.class)
+			.requestParams(params)
+			.invoke(new JsonCallback<LoginResult>() {
+				public void onCompleted(RocketError error, LoginResult result) {
+					if (error != null) {
 							
-							System.out.println("========error=======" + error);
-						} else {
-							System.out.println("========result======" + result);
+						System.out.println("========error=======" + error);
+					} else {
+						System.out.println("========result======" + result);
 
-							//testCookie();
-						}
+						//testCookie();
 					}
-				}).load(Constants.registerUrl);
+				}
+		});
 	}
 	
 	
 	private void getFund() {
-		final HashMap<String, String> params = new HashMap<String, String>();
+		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("token", Utils.getDeviceToken(this));
 		params.put("vjson", "ANDROID");
 		params.put("sign_t", "MD5");
@@ -114,144 +112,55 @@ public class MainActivity extends Activity {
 		
 		System.out.println("==============params===="+params);
 		
-		Rocket.with(this).requestParams(params)
-				.targetType(FundResult.class)
-				.invoke(new JsonCallback<FundResult>() {
-
-					@Override
-					public void onCompleted(RocketError error, FundResult result) {
-						if (error != null) {
+		Rocket.with(this)
+			.load(Constants.fundPfofitUrl)
+			.asJson(FundResult.class)
+			.requestParams(params)
+			.invoke(new JsonCallback<FundResult>() {
+			public void onCompleted(RocketError error, FundResult result) {
+				if (error != null) {
 							
-							System.out.println("========error=======" + error);
-						} else {
-							System.out.println("========result======" + result);
+					System.out.println("========error=======" + error);
+				} else {
+					System.out.println("========result======" + result);
 
 							//testCookie();
-						}
-					}
-				}).load(Constants.fundPfofitUrl);
+				}
+			}
+		});
 	}
 
 	private void testCookie() {
-		final HashMap<String, String> params = new HashMap<String, String>();
+		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("method", "GetExamInfo");
 
-		Rocket.with(this).enableCookie(true).requestParams(params)
-				.targetType(PaperInfo.class)
-				.invoke(new JsonCallback<PaperInfo>() {
-					public void onCompleted(RocketError error, PaperInfo result) {
-						if (error != null) {
-							System.out.println("========error=======" + error);
-						} else {
-							System.out.println("========result======" + result);
-						}
-					}
-				}).load(Constants.getExamInfoUrl);
+		Rocket.with(this)
+			.load(Constants.getExamInfoUrl)
+			.asJson(PaperInfo.class)
+			.enableCookie(true)
+			.requestParams(params)
+			.invoke(new JsonCallback<PaperInfo>() {
+			public void onCompleted(RocketError error, PaperInfo result) {
+				if (error != null) {
+					System.out.println("========error=======" + error);
+				} else {
+					System.out.println("========result======" + result);
+				}
+			}
+		});
 	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
 		//mAdapter.recycle();
-		// CacheView.recycle();
 	}
 
 	private String[] mUrls = {
-			"http://a3.twimg.com/profile_images/670625317/aam-logo-v3-twitter.png",
-			"http://a3.twimg.com/profile_images/740897825/AndroidCast-350_normal.png",
-			"https://www.google.com/images/logos/ps_logo2.png",
-			"http://a1.twimg.com/profile_images/957149154/twitterhalf_normal.jpg",
-			"http://a1.twimg.com/profile_images/97470808/icon_normal.png",
-			"http://a3.twimg.com/profile_images/511790713/AG.png",
-			"http://a3.twimg.com/profile_images/956404323/androinica-avatar_normal.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png",
-			"http://a3.twimg.com/profile_images/72774055/AndroidHomme-LOGO_normal.jpg",
-			"http://a1.twimg.com/profile_images/349012784/android_logo_small_normal.jpg",
-			"http://a1.twimg.com/profile_images/841338368/ea-twitter-icon.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet_normal.png",
-			"http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300_normal.jpg",
-			"http://a1.twimg.com/profile_images/655119538/andbook.png",
-			"http://a3.twimg.com/profile_images/768060227/ap4u_normal.jpg",
-			"http://a1.twimg.com/profile_images/74724754/android_logo_normal.png",
-			"http://a3.twimg.com/profile_images/681537837/SmallAvatarx150_normal.png",
-			"http://a1.twimg.com/profile_images/63737974/2008-11-06_1637_normal.png",
-			"http://a3.twimg.com/profile_images/548410609/icon_8_73.png",
-			"http://a1.twimg.com/profile_images/612232882/nexusoneavatar_normal.jpg",
-			"http://a1.twimg.com/profile_images/213722080/Bugdroid-phone_normal.png",
-			"http://a1.twimg.com/profile_images/645523828/OT_icon_090918_android_normal.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet.png",
-			"http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300_normal.jpg",
-			"http://a1.twimg.com/profile_images/655119538/andbook_normal.png",
-			"http://a3.twimg.com/profile_images/511790713/AG_normal.png",
-			"http://a3.twimg.com/profile_images/956404323/androinica-avatar.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png",
-			"http://a3.twimg.com/profile_images/72774055/AndroidHomme-LOGO_normal.jpg",
-			"http://a1.twimg.com/profile_images/349012784/android_logo_small_normal.jpg",
-			"http://a1.twimg.com/profile_images/841338368/ea-twitter-icon_normal.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300.jpg",
-			"http://a1.twimg.com/profile_images/655119538/andbook_normal.png",
-			"http://a3.twimg.com/profile_images/511790713/AG_normal.png",
-			"http://a3.twimg.com/profile_images/956404323/androinica-avatar_normal.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png",
-			"http://a3.twimg.com/profile_images/121630227/Droid.jpg",
-			"http://a1.twimg.com/profile_images/97470808/icon_normal.png",
-			"http://a3.twimg.com/profile_images/511790713/AG_normal.png",
-			"http://a3.twimg.com/profile_images/956404323/androinica-avatar_normal.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man.png",
-			"http://a3.twimg.com/profile_images/72774055/AndroidHomme-LOGO_normal.jpg",
-			"http://a1.twimg.com/profile_images/349012784/android_logo_small_normal.jpg",
-			"http://a1.twimg.com/profile_images/841338368/ea-twitter-icon_normal.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet.png",
-			"http://a3.twimg.com/profile_images/121630227/Droid_normal.jpg",
-			"http://a1.twimg.com/profile_images/957149154/twitterhalf_normal.jpg",
-			"http://a1.twimg.com/profile_images/97470808/icon.png",
-			"http://a3.twimg.com/profile_images/511790713/AG_normal.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png",
-			"http://a3.twimg.com/profile_images/72774055/AndroidHomme-LOGO_normal.jpg",
-			"http://a1.twimg.com/profile_images/349012784/android_logo_small_normal.jpg",
-			"http://a1.twimg.com/profile_images/841338368/ea-twitter-icon.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet_normal.png",
-			"http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300_normal.jpg",
-			"http://a1.twimg.com/profile_images/655119538/andbook_normal.png",
-			"http://a3.twimg.com/profile_images/768060227/ap4u_normal.jpg",
-			"http://a1.twimg.com/profile_images/74724754/android_logo.png",
-			"http://a3.twimg.com/profile_images/681537837/SmallAvatarx150_normal.png",
-			"http://a1.twimg.com/profile_images/63737974/2008-11-06_1637_normal.png",
-			"http://a3.twimg.com/profile_images/548410609/icon_8_73_normal.png",
-			"http://a1.twimg.com/profile_images/612232882/nexusoneavatar_normal.jpg",
-			"http://a1.twimg.com/profile_images/213722080/Bugdroid-phone_normal.png",
-			"http://a1.twimg.com/profile_images/645523828/OT_icon_090918_android.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet_normal.png",
-			"http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300_normal.jpg",
-			"http://a1.twimg.com/profile_images/655119538/andbook.png",
-			"http://a3.twimg.com/profile_images/956404323/androinica-avatar_normal.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png",
-			"http://a3.twimg.com/profile_images/72774055/AndroidHomme-LOGO_normal.jpg",
-			"http://a1.twimg.com/profile_images/349012784/android_logo_small_normal.jpg",
-			"http://a1.twimg.com/profile_images/841338368/ea-twitter-icon.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet_normal.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a1.twimg.com/profile_images/850960042/elandroidelibre-logo_300x300_normal.jpg",
-			"http://a1.twimg.com/profile_images/655119538/andbook_normal.png",
-			"http://a3.twimg.com/profile_images/511790713/AG_normal.png",
-			"http://a3.twimg.com/profile_images/956404323/androinica-avatar_normal.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png",
-			"http://a3.twimg.com/profile_images/121630227/Droid_normal.jpg",
-			"http://a1.twimg.com/profile_images/957149154/twitterhalf.jpg",
-			"http://a1.twimg.com/profile_images/97470808/icon_normal.png",
-			"http://a3.twimg.com/profile_images/511790713/AG_normal.png",
-			"http://a1.twimg.com/profile_images/909231146/Android_Biz_Man_normal.png",
-			"http://a3.twimg.com/profile_images/72774055/AndroidHomme-LOGO_normal.jpg",
-			"http://a1.twimg.com/profile_images/841338368/ea-twitter-icon_normal.png",
-			"http://a3.twimg.com/profile_images/64827025/android-wallpaper6_2560x160_normal.png",
-			"http://a3.twimg.com/profile_images/77641093/AndroidPlanet_normal.png" };
+			"http://d.hiphotos.baidu.com/image/pic/item/4d086e061d950a7ba9690f4c08d162d9f3d3c9de.jpg",
+			"http://d.hiphotos.baidu.com/image/pic/item/e7cd7b899e510fb3f44aab00db33c895d0430cd2.jpg",
+			"http://b.hiphotos.baidu.com/image/pic/item/960a304e251f95ca486dba40cb177f3e660952af.jpg",
+			"http://c.hiphotos.baidu.com/image/pic/item/f11f3a292df5e0febb0ac8895e6034a85edf7223.jpg",
+			"http://e.hiphotos.baidu.com/image/pic/item/1c950a7b02087bf4367b87f1f0d3572c11dfcf17.jpg",
+	};
 }
