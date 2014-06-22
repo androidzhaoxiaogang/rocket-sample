@@ -12,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 	ListView mList;
 	ListsApdater mAdapter;
 	EditText phone;
@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 //			}
 //		});
 		
-		
+		login();
 	}
 
 	private void login() {
@@ -57,17 +57,7 @@ public class MainActivity extends Activity {
 				.asJson(UserInfo.class)
 				.enableCookie(true)
 				.requestParams(params)
-				.invoke(new JsonCallback<UserInfo>() {
-					public void onCompleted(RocketError error, UserInfo result) {
-						if (error != null) {
-							System.out.println("========error=======" + error);
-						} else {
-							System.out.println("========result======" + result);
-
-							testCookie();
-						}
-					}
-				});
+				.invoke(this);
 	}
 	
 	private void register() {
@@ -93,8 +83,6 @@ public class MainActivity extends Activity {
 						System.out.println("========error=======" + error);
 					} else {
 						System.out.println("========result======" + result);
-
-						//testCookie();
 					}
 				}
 		});
@@ -163,4 +151,14 @@ public class MainActivity extends Activity {
 			"http://c.hiphotos.baidu.com/image/pic/item/f11f3a292df5e0febb0ac8895e6034a85edf7223.jpg",
 			"http://e.hiphotos.baidu.com/image/pic/item/1c950a7b02087bf4367b87f1f0d3572c11dfcf17.jpg",
 	};
+
+	@Override
+	public void onCompleted(RocketError error, UserInfo result) {
+		if (error != null) {
+			System.out.println("========error=======" + error);
+		} else {
+			System.out.println("========result======" + result);
+			testCookie();
+		}
+	}
 }
