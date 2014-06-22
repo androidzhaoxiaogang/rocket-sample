@@ -70,8 +70,6 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 		params.put("ver", Utils.getVersionCode(this));
 		params.put("_", String.valueOf(System.currentTimeMillis()));
 		
-		System.out.println("==============params===="+params);
-		
 		Rocket.with(this)
 			.load(Constants.registerUrl)
 			.asJson(LoginResult.class)
