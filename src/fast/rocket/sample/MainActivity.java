@@ -79,7 +79,6 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 			.invoke(new JsonCallback<LoginResult>() {
 				public void onCompleted(RocketError error, LoginResult result) {
 					if (error != null) {
-							
 						System.out.println("========error=======" + error);
 					} else {
 						System.out.println("========result======" + result);
