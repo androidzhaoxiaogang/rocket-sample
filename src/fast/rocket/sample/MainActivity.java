@@ -1,13 +1,16 @@
 package fast.rocket.sample;
 
+import java.io.File;
 import java.util.HashMap;
 
-
 import fast.rocket.Rocket;
+import fast.rocket.cache.CachePolicy;
 import fast.rocket.error.RocketError;
 import fast.rocket.response.JsonCallback;
+import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -47,6 +50,7 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 		login();
 	}
 
+	//rest api 
 	private void login() {
 		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("method", "onLogin");
@@ -60,6 +64,8 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 				.invoke(this);
 	}
 	
+	//rest api
+	@SuppressWarnings("unused")
 	private void register() {
 		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("token", Utils.getDeviceToken(this));
@@ -85,7 +91,8 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 		});
 	}
 	
-	
+	//rest api
+	@SuppressWarnings("unused")
 	private void getFund() {
 		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("token", Utils.getDeviceToken(this));
@@ -113,6 +120,7 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 		});
 	}
 
+	//rest api
 	private void testCookie() {
 		final HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("method", "GetExamInfo");
@@ -132,11 +140,43 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 			}
 		});
 	}
+	
+	@SuppressWarnings("unused")
+	private void uploadTagedPhoto(final PhotoInfo info) {
+	JsonCallback<UploadPhotoResp> cb = new JsonCallback<UploadPhotoResp>() {
+		public void onCompleted(RocketError error, UploadPhotoResp result) {
+		}
+	};
+	
+	HashMap<String, String> params = new HashMap<String, String>();
+	params.put("userId", "" + 11111);
+	params.put("userName", "aaaa");
+	params.put("password", "bbbbb");
+	
+	
+	Rocket.with(this)
+	.load("-----" + "/photo/upload/")
+	.asFile(UploadPhotoResp.class)
+	.addFile("image", getImageUri(this).getPath())
+	.addMultipartParam(params)
+	.cachePolicy(CachePolicy.NOCACHE)
+	.invoke(cb);
+	}
+	
+	private Uri getImageUri(Context context) {
+		final String imageName = "test.jpg";
+		File dir = getTempCacheDir(context);
+		File iamgeFile = new File(dir, imageName);
+		return Uri.fromFile(iamgeFile);
+	}
+	
+	public static File getTempCacheDir(Context context) {
+		return context.getExternalCacheDir();
+	}
 
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		//mAdapter.recycle();
 	}
 
 	private String[] mUrls = {
@@ -149,7 +189,7 @@ public class MainActivity extends Activity implements JsonCallback<UserInfo>{
 
 	@Override
 	public void onCompleted(RocketError error, UserInfo result) {
-		if (error != null) {
+		if (error != null) {  
 			System.out.println("========error=======" + error);
 		} else {
 			System.out.println("========result======" + result);
